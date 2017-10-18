@@ -84,8 +84,7 @@ def en_SHA_512(text):
     digest.update(text)
     ans = digest.finalize().encode('hex')
 #===============================================================================
-def en_RSA(text):
-    global encrypted
+def en_RSA():
     file = open("publicKey.txt","r")
     public_key = serialization.load_pem_public_key(
         file.read(),
@@ -93,21 +92,25 @@ def en_RSA(text):
     )
     file.close()
     addnum = 214
-    encrypted = ''
-    input_text = text[:addnum]
-    while input_text:
-        encrypted += public_key.encrypt(
-            input_text,
-            apadding.OAEP(
-                mgf=apadding.MGF1(algorithm=hashes.SHA1()),
-                algorithm=hashes.SHA1(),
-                label=None
+    file1 = open("temp.txt","w")
+    file = open("random.txt","r")
+    while 1:
+        text = file.read(addnum)
+        if len(text)==0:
+            break
+        file1.write(public_key.encrypt(
+                text,
+                apadding.OAEP(
+                    mgf=apadding.MGF1(algorithm=hashes.SHA1()),
+                    algorithm=hashes.SHA1(),
+                    label=None
+                )
             )
         )
-        text = text[addnum:]
-        input_text = text[:addnum]
+    file1.close()
+    file.close()
 #===============================================================================
-def de_RSA(encrypted):
+def de_RSA():
     file = open("privateKey.txt","r")
     private_key = serialization.load_pem_private_key(
         file.read(),
@@ -115,20 +118,23 @@ def de_RSA(encrypted):
         backend=default_backend()
     )
     file.close()
-
-    input_text = encrypted[:256]
-    dncrypted = ''
-    while input_text:
-        dncrypted += private_key.decrypt(
-            input_text,
-            apadding.OAEP(
-                mgf=apadding.MGF1(algorithm=hashes.SHA1()),
-                algorithm=hashes.SHA1(),
-                label=None
+    file = open("temp.txt","r")
+    file1 = open("ans.txt","w")
+    while 1:
+        text = file.read(256)
+        if len(text)==0:
+            break
+        file1.write(private_key.decrypt(
+                text,
+                apadding.OAEP(
+                    mgf=apadding.MGF1(algorithm=hashes.SHA1()),
+                    algorithm=hashes.SHA1(),
+                    label=None
+                )
             )
         )
-        encrypted = encrypted[256:]
-        input_text = encrypted[:256]
+    file.close()
+    file1.close()
 #===============================================================================
 start()
 #AES256ECB
@@ -164,14 +170,14 @@ startTime = time.time()
 en_SHA_512(text)
 print time.time()-startTime
 #RSA2048
-print "RSA is using 1M+7byte data"
-changetext()
+encrypted = ''
+text = ''
 print "RSA_2048    encode:",
 startTime = time.time()
-en_RSA(text)
+en_RSA()
 print time.time()-startTime
 print "RSA_2048    decode:",
 startTime = time.time()
-de_RSA(encrypted)
+de_RSA()
 print time.time()-startTime
 #===============================================================================
