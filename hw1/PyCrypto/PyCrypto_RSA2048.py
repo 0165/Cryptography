@@ -7,51 +7,49 @@ from Crypto import Random
 import os
 import time
 #===============================================================================
-def start():
-    file = open("random1.txt","r")
-    global text 
-    text = file.read()
-    file.close()
-#===============================================================================
-def en_RSA(text):
+def en_RSA():
     file = open("publicKey.txt","r")
     key = file.read()
     file.close()
     rsakey = RSA.importKey(key)
     cipher = PKCS1_v1_5.new(rsakey)
     addnum = rsakey.size()/8-10  #256-11
-    global encrypted
-    encrypted = ''
-    input_text = text[:addnum]
-    while input_text:
-        encrypted += cipher.encrypt(input_text)
-        text = text[addnum:]
-        input_text = text[:addnum]
+    file1 = open("temp.txt","w")
+    file = open("random.txt","r")
+    while 1:
+        text = file.read(addnum)
+        if len(text)==0:
+            break
+        file1.write(cipher.encrypt(text))
+    file1.close()
+    file.close()
 #===============================================================================
-def de_RSA(encrypted):
+def de_RSA():
     file = open("privateKey.txt","r")
     key = file.read()
     file.close()
     rsakey =  RSA.importKey(key)
     cipher = PKCS1_v1_5.new(rsakey)
     dsize = SHA512.digest_size
-    input_text = encrypted[:256]
-    decrypted = ''
-    while input_text:
+    file = open("temp.txt","r")
+    file1 = open("ans.txt","w")
+    while 1:
+        text = file.read(256)
+        if len(text)==0:
+            break
         sentinel = Random.new().read(15 + dsize)
-        decrypted += cipher.decrypt(input_text, sentinel)
-        encrypted = encrypted[256:]
-        input_text = encrypted[:256]
+        file1.write(cipher.decrypt(text, sentinel))
+    file.close()
+    file1.close()
 #===============================================================================
-start()
 #RSA2048
 print "RSA_2048    encode:",
 startTime = time.time()
-en_RSA(text)
+en_RSA()
 print time.time()-startTime
 
 print "RSA_2048    decode:",
 startTime = time.time()
-de_RSA(encrypted)
+de_RSA()
 print time.time()-startTime
 #===============================================================================
