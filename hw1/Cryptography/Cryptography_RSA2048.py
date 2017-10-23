@@ -8,7 +8,6 @@ from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.hazmat.primitives import serialization
 #===============================================================================
 def en_RSA():
-    global encrypted
     file = open("publicKey.txt","r")
     public_key = serialization.load_pem_public_key(
         file.read(),
