@@ -91,22 +91,14 @@ def en_RSA():
         backend=default_backend()
     )
     file.close()
-    addnum = 214
+    addnum = 245
     file1 = open("temp.txt","w")
     file = open("random.txt","r")
     while 1:
         text = file.read(addnum)
         if len(text)==0:
             break
-        file1.write(public_key.encrypt(
-                text,
-                apadding.OAEP(
-                    mgf=apadding.MGF1(algorithm=hashes.SHA1()),
-                    algorithm=hashes.SHA1(),
-                    label=None
-                )
-            )
-        )
+        file1.write(public_key.encrypt(text,apadding.PKCS1v15()))
     file1.close()
     file.close()
 #===============================================================================
@@ -124,15 +116,7 @@ def de_RSA():
         text = file.read(256)
         if len(text)==0:
             break
-        file1.write(private_key.decrypt(
-                text,
-                apadding.OAEP(
-                    mgf=apadding.MGF1(algorithm=hashes.SHA1()),
-                    algorithm=hashes.SHA1(),
-                    label=None
-                )
-            )
-        )
+        file1.write(private_key.decrypt(text,apadding.PKCS1v15()))
     file.close()
     file1.close()
 #===============================================================================
