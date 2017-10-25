@@ -1,3 +1,4 @@
+%using XeLatex
 \documentclass{article}
 \usepackage{type1cm}
 \usepackage{float}
@@ -495,7 +496,7 @@ def en_RSA():
         text = file.read(addnum)
         if len(text)==0:
             break
-        file1.write(public_key.encrypt(text,apadding.PKCS1v15()))
+        file1.write(public_key.encrypt(text,padding.PKCS1v15()))
     file1.close()
     file.close()
 #======================================================================
@@ -513,7 +514,7 @@ def de_RSA():
         text = file.read(256)
         if len(text)==0:
             break
-        file1.write(private_key.decrypt(text,apadding.PKCS1v15()))
+        file1.write(private_key.decrypt(text,padding.PKCS1v15()))
     file.close()
     file1.close()
 #======================================================================
